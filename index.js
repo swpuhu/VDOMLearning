@@ -1,1 +1,4 @@
-console.log('hello world');
+import updateVDOM from './src/updateVDOM';
+
+
+updateVDOM();
