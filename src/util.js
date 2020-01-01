@@ -1,5 +1,13 @@
 export function flatten(arr) {
-    return [...arr];
+    let ret = [];
+    for (let item of arr) {
+        if (typeof item === 'function') {
+            ret.push(...item());
+        } else {
+            ret.push(item);
+        }
+    }
+    return [...ret];
 }
 
 export function h(tag, props = {}, ...children) {
