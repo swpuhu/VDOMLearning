@@ -28,7 +28,9 @@ export function createElement(vdom) {
     const element = document.createElement(tag);
 
     for (let key in props) {
-        element.setAttribute(key, props[key]);
+        if (props[key]) {
+            element.setAttribute(key, props[key]);
+        }
     }
 
     children.map(createElement).forEach(element.appendChild.bind(element));

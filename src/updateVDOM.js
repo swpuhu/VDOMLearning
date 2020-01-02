@@ -1,5 +1,5 @@
 import { h, createElement } from './util';
-
+import './style.less';
 export default function () {
     const nodePatchTypes = {
         CREATE: 'create node',
@@ -14,29 +14,32 @@ export default function () {
     };
 
     let state = {
-        nums: 5
+        nums: 5,
+        msg: 'Hello World',
+        activeIndex: 0
     };
+    window.state = state;
     let timer;
     let preVDom;
     function view() {
         return h(
             'div',
             null,
-            'Hello World',
+            state.msg,
             h(
                 'ul',
                 null,
-                h(
-                    'li',
-                    null,
-                    () => {
-                        let array = [];
-                        for (let i = 0; i < state.nums; i++) {
-                            array.push(h('div', { class: 'item' + i + state.nums }, `第${i}个`));
-                        }
-                        return array;
+                () => {
+                    let array = [];
+                    for (let i = 0; i < state.nums; i++) {
+                        array.push(h(
+                            'li',
+                            { class: state.activeIndex === i ? 'active' : ''},
+                            `第${i}个`
+                        ));
                     }
-                )
+                    return array;
+                }
             )
         )
     }
@@ -48,14 +51,14 @@ export default function () {
         const dom = createElement(vdom);
         element.appendChild(dom);
 
-        timer = setInterval(() => {
-            state.nums += 1;
-            tick(element);
-        }, 500);
+        // timer = setInterval(() => {
+        //     state.nums += 1;
+        //     tick(element);
+        // }, 500);
     }
 
     function tick(element) {
-        if (state.nums > 7) {
+        if (state.nums > 20) {
             clearTimeout(timer);
             return;
         }
@@ -147,15 +150,14 @@ export default function () {
 
 
     function patch(parent, patchObj, index = 0) {
-        if (!patchObj || !parent) {
+        if (!patchObj) {
             return;
         }
-
         // 新建元素
         if (patchObj.type === nodePatchTypes.CREATE) {
             return parent.appendChild(createElement(patchObj.vdom));
         }
-        const element = parent.children[index];
+        const element = parent.childNodes[index];
         
         // 删除元素
         if (patchObj.type === nodePatchTypes.REMOVE) {
@@ -171,10 +173,9 @@ export default function () {
         if (patchObj.type === nodePatchTypes.UPDATE) {
             const {props, children} = patchObj;
             patchProps(element, props);
-            
             children.forEach((patchObj, i) => {
                 patch(element, patchObj, i);
-            })
+            });
         }
 
     }
@@ -197,4 +198,10 @@ export default function () {
     document.body.appendChild(app);
     render(app);
 
+
+
+    function update() {
+        tick(app);
+    }
+    window.update = update;
 }
